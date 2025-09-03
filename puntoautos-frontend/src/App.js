@@ -1,31 +1,43 @@
-import './App.css';
-import {MyButton} from './function';
-
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Logout from "./pages/Logout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <div className="App">
-      <section>
-        <header>
-          <h1>PuntoAutos</h1>
-          <nav>
-            <a href="/">Inicio</a> | <a href="/login">Login</a> | <a href="/registro">Registro</a>
-          </nav>
-        </header>
-        <main>
-          <h2>Bienvenido a PuntoAutos</h2>
-          <MyButton />
-          <MyButton />
-          <MyButton />
-          <p>La mejor plataforma para comprar y vender vehículos usados.</p>
-        </main>
-        <footer>
-          <p>&copy; 2025 PuntoAutos</p>
-        </footer>
-      </section>  
-    </div>
+    <Router>
+      <nav>
+        <Link to="/">Home</Link> |{" "}
+        <Link to="/login">Login</Link> |{" "}
+        <Link to="/register">Register</Link> |{" "}
+        <Link to="/logout">Logout</Link>
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/logout" element={<Logout />} />
+
+        {/* Ruta protegida */}
+        <Route
+          path="/protected"
+          element={
+            <ProtectedRoute>
+              <h2>Zona protegida: solo usuarios logueados</h2>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
 
 export default App;
+
+
+
 
