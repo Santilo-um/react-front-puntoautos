@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
-
-// Simulación: validar si hay sesión
-const isAuthenticated = () => {
-  return localStorage.getItem("session") ? true : false;
-};
+import { AuthContext } from "../AuthContext"; // Ajusta la ruta según tu proyecto
 
 function ProtectedRoute({ children }) {
-  if (!isAuthenticated()) {
+  const { user } = useContext(AuthContext);
+
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
+
   return children;
 }
 
