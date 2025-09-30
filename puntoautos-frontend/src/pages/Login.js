@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext"; // Ajusta la ruta según tu proyecto
+import { AuthContext } from "../AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function Login() {
@@ -11,30 +11,25 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const success = login(email, password);
     if (success) {
-      navigate("/Home");
+      navigate("/home");
     } else {
       alert("Credenciales incorrectas");
     }
   };
 
-  const goToRegister = () => {
-    navigate("/register");
-  };
-
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
-      <div className="card shadow p-4" style={{ width: "400px" }}>
-        <h2 className="text-center mb-4 fw-bold">Iniciar Sesión</h2>
+    <div className="container d-flex justify-content-center align-items-center vh-100">
+      <div className="card shadow-lg p-4 w-100" style={{ maxWidth: "400px" }}>
+        <h2 className="text-center mb-4 fw-bold text-primary">Iniciar Sesión</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">Correo electrónico</label>
             <input
               type="email"
               className="form-control form-control-lg"
-              placeholder="Ingresa tu correo"
+              placeholder="ejemplo@correo.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -45,7 +40,7 @@ function Login() {
             <input
               type="password"
               className="form-control form-control-lg"
-              placeholder="Ingresa tu contraseña"
+              placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -57,8 +52,8 @@ function Login() {
         </form>
         <div className="text-center mt-3">
           <button
-            className="btn btn-link text-decoration-none"
-            onClick={goToRegister}
+            className="btn btn-link"
+            onClick={() => navigate("/register")}
           >
             ¿No tienes cuenta? Regístrate
           </button>
@@ -69,3 +64,4 @@ function Login() {
 }
 
 export default Login;
+
