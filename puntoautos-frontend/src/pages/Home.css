@@ -1,0 +1,13 @@
+.card-img-top {
+  height: 200px;
+  object-fit: cover;
+}
+
+.badge {
+  min-width: 150px;
+}
+
+.hero-section {
+background: linear-gradient(135deg, #007bff, #0056b3) !important;
+}
+  

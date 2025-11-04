@@ -6,14 +6,15 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Logout from "./pages/Logout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <nav>
-          <Link to="/home">Home</Link> |{" "}
-          <Link to="/">Login</Link> |{" "}
+          <Link to="/">Home</Link> |{" "}
+          <Link to="/Login">Login</Link> |{" "}
           <Link to="/register">Register</Link> |{" "}
           <Link to="/logout">Logout</Link>
         </nav>
