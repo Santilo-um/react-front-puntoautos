@@ -12,38 +12,54 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <nav>
-          <Link to="/">Home</Link> |{" "}
-          <Link to="/Login">Login</Link> |{" "}
-          <Link to="/register">Register</Link> |{" "}
-          <Link to="/logout">Logout</Link>
+        <nav className="navbar navbar-expand-lg navbar-light bg-light px-4">
+          <Link className="navbar-brand" to="/">PuntoAutos</Link>
+          <div className="collapse navbar-collapse">
+            <ul className="navbar-nav me-auto">
+              <li className="nav-item">
+                <Link className="nav-link" to="/login">Login</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/register">Register</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/logout">Logout</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/home">Home</Link>
+              </li>
+            </ul>
+          </div>
         </nav>
 
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/logout" element={<Logout />} />
+        <div className="container mt-4">
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/logout" element={<Logout />} />
 
-          {/* Home protegida */}
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
+            {/* Ruta protegida: Home */}
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Ruta protegida de prueba */}
-          <Route
-            path="/protected"
-            element={
-              <ProtectedRoute>
-                <h2>Zona protegida: solo usuarios logueados</h2>
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+            {/* Ruta protegida de prueba */}
+            <Route
+              path="/protected"
+              element={
+                <ProtectedRoute>
+                  <h2 className="text-center">Zona protegida: solo usuarios logueados</h2>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </div>
       </Router>
     </AuthProvider>
   );

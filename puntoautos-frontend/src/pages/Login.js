@@ -8,14 +8,15 @@ function Login() {
   const [password, setPassword] = useState("");
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = login(email, password);
+    const success = await login(email, password);
     if (success) {
       navigate("/home");
     } else {
-      alert("Credenciales incorrectas");
+      setError("Credenciales incorrectas o usuario no registrado");
     }
   };
 
@@ -46,6 +47,11 @@ function Login() {
               required
             />
           </div>
+          {error && (
+            <div className="alert alert-danger text-center py-2" role="alert">
+              {error}
+            </div>
+          )}
           <button type="submit" className="btn btn-primary w-100 btn-lg">
             Ingresar
           </button>
@@ -64,4 +70,3 @@ function Login() {
 }
 
 export default Login;
-

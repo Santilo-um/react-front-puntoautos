@@ -4,40 +4,41 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [users, setUsers] = useState([
-    { email: "test@demo.com", password: "1234" }, // Usuario inicial hardcodeado
-  ]);
+  const [token, setToken] = useState(localStorage.getItem("access") || null);
 
-  const login = (email, password) => {
-    const foundUser = users.find(
-      (u) => u.email === email && u.password === password
-    );
-    if (foundUser) {
-      setUser({ email: foundUser.email });
+  const login = async (email, password) => {
+    try {
+      const response = await fetch("http://localhost:8000/auth/token/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) return false;
+
+      const data = await response.json();
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+      setToken(data.access);
+      setUser({ email }); // Podés extender con más datos si el token los incluye
       return true;
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      return false;
     }
-    return false;
-  };
-
-  const register = (email, password) => {
-    // Verifica si ya existe
-    const exists = users.some((u) => u.email === email);
-    if (exists) {
-      return false; // Usuario ya registrado
-    }
-
-    const newUser = { email, password };
-    setUsers([...users, newUser]);
-    setUser({ email });
-    return true;
   };
 
   const logout = () => {
     setUser(null);
+    setToken(null);
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register }}>
+    <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

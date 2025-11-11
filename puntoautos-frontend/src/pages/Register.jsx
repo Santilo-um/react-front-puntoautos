@@ -1,25 +1,44 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { register } = useContext(AuthContext);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = register(email, password);
+    setError("");
 
-    if (!success) {
-      alert("El usuario ya existe");
-      return;
+    try {
+      const response = await fetch("http://localhost:8000/auth/registro/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (response.status === 400) {
+        const data = await response.json();
+        const mensaje = data?.email?.[0] || "Datos inválidos o usuario ya existe";
+        setError(mensaje);
+        return;
+      }
+
+      if (!response.ok) {
+        setError("Error al registrar usuario");
+        return;
+      }
+
+      alert("Usuario registrado con éxito");
+      navigate("/login");
+    } catch (err) {
+      console.error("Error completo:", err);
+      setError("No se pudo conectar con el servidor");
     }
-
-    alert("Usuario registrado con éxito");
-    navigate("/home");
   };
 
   return (
@@ -49,15 +68,17 @@ function Register() {
               required
             />
           </div>
+          {error && (
+            <div className="alert alert-danger text-center py-2" role="alert">
+              {error}
+            </div>
+          )}
           <button type="submit" className="btn btn-success w-100 btn-lg">
             Registrarse
           </button>
         </form>
         <div className="text-center mt-3">
-          <button
-            className="btn btn-link"
-            onClick={() => navigate("/")}
-          >
+          <button className="btn btn-link" onClick={() => navigate("/login")}>
             ¿Ya tienes cuenta? Inicia sesión
           </button>
         </div>
