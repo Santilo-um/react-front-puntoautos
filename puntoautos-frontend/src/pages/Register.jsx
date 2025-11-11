@@ -1,3 +1,4 @@
+// Register.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -13,7 +14,7 @@ function Register() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:8000/auth/registro/", {
+      const response = await fetch("http://127.0.0.1:8000/auth/registro/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -21,15 +22,11 @@ function Register() {
         body: JSON.stringify({ email, password })
       });
 
-      if (response.status === 400) {
-        const data = await response.json();
-        const mensaje = data?.email?.[0] || "Datos inválidos o usuario ya existe";
-        setError(mensaje);
-        return;
-      }
+      const data = await response.json();
 
       if (!response.ok) {
-        setError("Error al registrar usuario");
+        const mensaje = data?.email?.[0] || data?.password?.[0] || "Error al registrar usuario";
+        setError(mensaje);
         return;
       }
 

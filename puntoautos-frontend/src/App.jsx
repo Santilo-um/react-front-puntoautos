@@ -6,7 +6,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Logout from "./pages/Logout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Publicar from "./pages/publicar";
+import Perfil from "./pages/perfil"
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function App() {
   return (
@@ -17,16 +20,19 @@ function App() {
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav me-auto">
               <li className="nav-item">
-                <Link className="nav-link" to="/login">Login</Link>
+                <Link className="nav-link" to="/login"></Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/register">Register</Link>
+                <Link className="nav-link" to="/register"></Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/publicar">Publicar</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/perfil">Mi Perfil</Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link" to="/logout">Logout</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/home">Home</Link>
               </li>
             </ul>
           </div>
@@ -34,10 +40,13 @@ function App() {
 
         <div className="container mt-4">
           <Routes>
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/perfil" element={<ProtectedRoute><Perfil /></ProtectedRoute>}/>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/logout" element={<Logout />} />
+
+            <Route path="/publicar" element={<ProtectedRoute><Publicar /></ProtectedRoute>}/>
 
             {/* Ruta protegida: Home */}
             <Route

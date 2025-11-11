@@ -3,11 +3,11 @@ import { Navigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 
 function ProtectedRoute({ children }) {
-  const { user, token } = useContext(AuthContext);
-  const storedToken = localStorage.getItem("access");
+  const { token } = useContext(AuthContext);
+  const storedToken = localStorage.getItem("token"); // Asegurate que usás "token", no "access"
 
-  // Si no hay usuario ni token válido, redirige al login
-  if (!user && !token && !storedToken) {
+  // Si no hay token en contexto ni en localStorage, redirige al login
+  if (!token && !storedToken) {
     return <Navigate to="/login" replace />;
   }
 
