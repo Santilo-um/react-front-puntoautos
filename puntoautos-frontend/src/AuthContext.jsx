@@ -4,44 +4,50 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [token, setToken] = useState(null);
 
+  // Persistencia al recargar
   useEffect(() => {
-    if (token) {
-      const storedEmail = localStorage.getItem("email");
-      if (storedEmail) setUser({ email: storedEmail });
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      setUser(JSON.parse(storedUser));
     }
-  }, [token]);
+  }, []);
 
+  // Función de login
   const login = async (email, password) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/token/", {
+      const response = await fetch("http://127.0.0.1:8000/auth/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) return false;
-
       const data = await response.json();
-      localStorage.setItem("token", data.access);
-      localStorage.setItem("refresh", data.refresh);
-      localStorage.setItem("email", email);
-      setToken(data.access);
-      setUser({ email });
-      return true;
+
+      if (response.ok) {
+        setToken(data.access); // ✅ actualiza el estado
+        setUser(data.user);    // ✅ actualiza el estado
+        localStorage.setItem("token", data.access);
+        localStorage.setItem("refresh", data.refresh);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        return true;
+      }
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-      return false;
+      console.error("Error en login:", error);
     }
+    return false;
   };
 
+  // Función de logout
   const logout = () => {
     setUser(null);
     setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("refresh");
-    localStorage.removeItem("email");
+    localStorage.removeItem("user");
   };
 
   return (
