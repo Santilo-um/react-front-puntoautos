@@ -1,82 +1,215 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../AuthContext";
 
-function Perfil() {
-  const [publicaciones, setPublicaciones] = useState([]);
-  const [solicitudesRealizadas, setSolicitudesRealizadas] = useState([]);
-  const [solicitudesRecibidas, setSolicitudesRecibidas] = useState([]);
+export default function Perfil() {
+  const { token } = useContext(AuthContext);
+  const [perfil, setPerfil] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
+  // -------------------------------
+  // Cargar perfil autenticado
+  // -------------------------------
+  const cargarPerfil = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/auth/perfil/", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`, // ⬅️ TOKEN JWT
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.log("Error backend:", data);
+        return;
+      }
+
+      setPerfil(data);
+    } catch (error) {
+      console.error("Error cargando perfil:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // -------------------------------
+  // ACEPTAR SOLICITUD
+  // -------------------------------
+  const aceptar = async (id) => {
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/solicitud/${id}/aceptar/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.ok) {
+        cargarPerfil(); // recargar después de aceptar
+      }
+    } catch (error) {
+      console.error("Error al aceptar solicitud:", error);
+    }
+  };
+
+  // -------------------------------
+  // RECHAZAR SOLICITUD
+  // -------------------------------
+  const rechazar = async (id) => {
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/solicitud/${id}/rechazar/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.ok) {
+        cargarPerfil(); // recargar después de rechazar
+      }
+    } catch (error) {
+      console.error("Error al rechazar solicitud:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchPerfil = async () => {
-      try {
-        const res = await fetch("http://127.0.0.1:8000/auth/perfil/", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        const data = await res.json();
-
-        setPublicaciones(data.publicaciones || []);
-        setSolicitudesRealizadas(data.solicitudes_realizadas || []);
-        setSolicitudesRecibidas(data.solicitudes_recibidas || []);
-
-      } catch (err) {
-        console.error("Error cargando perfil:", err);
-      }
-    };
-
-    fetchPerfil();
+    if (token) cargarPerfil();
   }, [token]);
 
+  if (loading) return <p className="text-center mt-10">Cargando perfil...</p>;
+  if (!perfil) return <p>No se pudo cargar el perfil.</p>;
+
   return (
-    <div className="container mt-4">
-      <h2 className="text-primary mb-4">Mi Perfil</h2>
+    <div className="max-w-5xl mx-auto p-6">
+      {/* Usuario */}
+      <h1 className="text-3xl font-bold mb-4">Mi Perfil</h1>
+
+      <div className="bg-white shadow rounded p-4 mb-8">
+        <p className="text-lg font-semibold">Usuario:</p>
+        <p>{perfil.usuario.email}</p>
+      </div>
 
       {/* Publicaciones */}
-      <h4 className="mt-3">Mis publicaciones</h4>
-      {publicaciones.length === 0 ? (
-        <p>No has publicado vehículos aún.</p>
-      ) : (
-        publicaciones.map(v => (
-          <div key={v.id} className="card p-3 mb-3">
-            <h5>{v.marca} {v.modelo} ({v.año})</h5>
-            <p>{v.descripcion}</p>
-            <p><strong>Precio:</strong> ${v.precio}</p>
-            <p><strong>Estado:</strong> {v.estado}</p>
-          </div>
-        ))
+      <h2 className="text-2xl font-bold mb-3">Mis Publicaciones</h2>
+
+      {perfil.publicaciones.length === 0 && (
+        <p className="text-gray-500 mb-6">No tenés vehículos publicados.</p>
       )}
+
+      <div className="space-y-6">
+        {perfil.publicaciones.map((vehiculo) => (
+          <div
+            key={vehiculo.vehiculo_id}
+            className="bg-white shadow rounded p-4"
+          >
+            <h3 className="text-xl font-bold">
+              {vehiculo.marca} {vehiculo.modelo}
+            </h3>
+            <p>Precio: ${vehiculo.precio}</p>
+            <p>Estado: {vehiculo.estado}</p>
+
+            {/* Solicitudes recibidas */}
+            <div className="mt-4">
+              <p className="font-semibold mb-2">Solicitudes recibidas:</p>
+
+              {vehiculo.solicitudes.length === 0 && (
+                <p className="text-gray-500">No hay solicitudes aún.</p>
+              )}
+
+              <div className="space-y-3">
+                {vehiculo.solicitudes.map((s) => (
+                  <div
+                    key={s.id}
+                    className="border rounded p-3 bg-gray-50 flex flex-col"
+                  >
+                    <p>
+                      <strong>Solicitante:</strong> {s.solicitante.email}
+                    </p>
+                    <p>
+                      <strong>Mensaje:</strong> {s.mensaje || "Sin mensaje"}
+                    </p>
+                    <p>
+                      <strong>Estado:</strong>{" "}
+                      <span
+                        className={`${
+                          s.estado === "pendiente"
+                            ? "text-yellow-600"
+                            : s.estado === "aceptada"
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                      >
+                        {s.estado}
+                      </span>
+                    </p>
+
+                    {/* Botones */}
+                    {s.estado === "pendiente" && (
+                      <div className="flex gap-3 mt-3">
+                        <button
+                          onClick={() => aceptar(s.id)}
+                          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                        >
+                          Aceptar
+                        </button>
+                        <button
+                          onClick={() => rechazar(s.id)}
+                          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                        >
+                          Rechazar
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Solicitudes enviadas */}
-      <h4 className="mt-4">Solicitudes enviadas</h4>
-      {solicitudesRealizadas.length === 0 ? (
-        <p>No has enviado solicitudes.</p>
-      ) : (
-        solicitudesRealizadas.map(s => (
-          <div key={s.id} className="card p-3 mb-3">
-            <p><strong>Vehículo:</strong> #{s.vehiculo}</p>
-            <p><strong>Estado:</strong> {s.estado}</p>
-            <p><strong>Mensaje:</strong> {s.mensaje || "Sin mensaje"}</p>
-          </div>
-        ))
+      <h2 className="text-2xl font-bold mt-10 mb-3">Solicitudes Enviadas</h2>
+
+      {perfil.solicitudes_enviadas.length === 0 && (
+        <p className="text-gray-500">No enviaste solicitudes todavía.</p>
       )}
 
-      {/* Solicitudes recibidas */}
-      <h4 className="mt-4">Solicitudes recibidas</h4>
-      {solicitudesRecibidas.length === 0 ? (
-        <p>No tienes solicitudes nuevas.</p>
-      ) : (
-        solicitudesRecibidas.map(s => (
-          <div key={s.id} className="card p-3 mb-3">
-            <p><strong>De:</strong> {s.solicitante}</p>
-            <p><strong>Vehículo:</strong> #{s.vehiculo}</p>
-            <p><strong>Estado:</strong> {s.estado}</p>
-            <p><strong>Mensaje:</strong> {s.mensaje || "Sin mensaje"}</p>
+      <div className="space-y-4">
+        {perfil.solicitudes_enviadas.map((s) => (
+          <div key={s.id} className="bg-white shadow rounded p-4">
+            <p>
+              <strong>Vehículo:</strong> {s.vehiculo.marca}{" "}
+              {s.vehiculo.modelo}
+            </p>
+            <p>
+              <strong>Mensaje:</strong> {s.mensaje}
+            </p>
+            <p>
+              <strong>Estado:</strong>{" "}
+              <span
+                className={`${
+                  s.estado === "pendiente"
+                    ? "text-yellow-600"
+                    : s.estado === "aceptada"
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
+                {s.estado}
+              </span>
+            </p>
+            <p className="text-sm text-gray-500">{s.fecha_solicitud}</p>
           </div>
-        ))
-      )}
+        ))}
+      </div>
     </div>
   );
 }
-
-export default Perfil;
