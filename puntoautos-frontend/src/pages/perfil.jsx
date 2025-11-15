@@ -154,12 +154,14 @@ export default function Perfil() {
                     {s.estado === "pendiente" && (
                       <div className="flex gap-3 mt-3">
                         <button
+                          backgorundColor="green"
                           onClick={() => aceptar(s.id)}
                           className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
                         >
                           Aceptar
                         </button>
                         <button
+                          backgorundColor="red"
                           onClick={() => rechazar(s.id)}
                           className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                         >
