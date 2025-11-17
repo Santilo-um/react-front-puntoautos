@@ -4,27 +4,71 @@ import { useNavigate } from "react-router-dom";
 
 function PanelAdmin() {
   const [vehiculos, setVehiculos] = useState([]);
+  const [cargando, setCargando] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  // -------------------------------
+  // 1. Validar si el usuario es admin
+  // -------------------------------
+  const verificarAdmin = async () => {
     const token = localStorage.getItem("token");
-    fetch("http://127.0.0.1:8000/vehiculos/", {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then((res) => res.json())
-      .then(setVehiculos)
-      .catch((err) => console.error("Error al cargar vehículos:", err));
+    if (!token) return navigate("/login");
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/auth/es_admin/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.admin) {
+        return navigate("/"); // No autorizado
+      }
+
+      cargarVehiculos(); // Si es admin, cargar publicaciones
+    } catch (error) {
+      console.error("Error verificando admin:", error);
+      navigate("/");
+    }
+  };
+
+  // -------------------------------
+  // 2. Cargar vehículos
+  // -------------------------------
+  const cargarVehiculos = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/vehiculos/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await res.json();
+      setVehiculos(data);
+    } catch (error) {
+      console.error("Error al cargar vehículos:", error);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  useEffect(() => {
+    verificarAdmin();
   }, []);
 
+  // -------------------------------
+  // Cambiar activo/desactivo
+  // -------------------------------
   const toggleActivo = async (id, nuevoEstado) => {
     const token = localStorage.getItem("token");
+
     await fetch(`http://127.0.0.1:8000/vehiculos/${id}/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ activo: nuevoEstado })
+      body: JSON.stringify({ activo: nuevoEstado }),
     });
 
     setVehiculos((prev) =>
@@ -32,15 +76,19 @@ function PanelAdmin() {
     );
   };
 
+  // -------------------------------
+  // Cambiar estado (disponible/pausado/vendido)
+  // -------------------------------
   const cambiarEstado = async (id, nuevoEstado) => {
     const token = localStorage.getItem("token");
+
     await fetch(`http://127.0.0.1:8000/vehiculos/${id}/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ estado: nuevoEstado })
+      body: JSON.stringify({ estado: nuevoEstado }),
     });
 
     setVehiculos((prev) =>
@@ -48,15 +96,24 @@ function PanelAdmin() {
     );
   };
 
+  // -------------------------------
+  // Eliminar publicación
+  // -------------------------------
   const eliminarVehiculo = async (id) => {
+    if (!window.confirm("¿Seguro que querés eliminar esta publicación?")) return;
+
     const token = localStorage.getItem("token");
+
     await fetch(`http://127.0.0.1:8000/vehiculos/${id}/`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     });
 
     setVehiculos((prev) => prev.filter((v) => v.id !== id));
   };
+
+  if (cargando)
+    return <p className="text-center mt-5 fw-bold">Cargando panel de administrador...</p>;
 
   return (
     <Container className="mt-5">
@@ -67,16 +124,23 @@ function PanelAdmin() {
             <Card>
               <Card.Img variant="top" src={v.imagen || "https://via.placeholder.com/300x200"} />
               <Card.Body>
-                <Card.Title>{v.marca} {v.modelo} ({v.año})</Card.Title>
+                <Card.Title>
+                  {v.marca} {v.modelo} ({v.año})
+                </Card.Title>
+
                 <Card.Text>
                   Precio: ${v.precio}
                   <br />
-                  <strong>Estado:</strong>{" "}
-                  <Badge bg={
-                    v.estado === "vendido" ? "danger" :
-                    v.estado === "pausado" ? "secondary" :
-                    "success"
-                  }>
+                  <strong>Estado: </strong>
+                  <Badge
+                    bg={
+                      v.estado === "vendido"
+                        ? "danger"
+                        : v.estado === "pausado"
+                        ? "secondary"
+                        : "success"
+                    }
+                  >
                     {v.estado}
                   </Badge>
                   <br />
@@ -86,7 +150,7 @@ function PanelAdmin() {
                   </Badge>
                 </Card.Text>
 
-                {/* Cambiar estado */}
+                {/* cambiar estado */}
                 <Form.Select
                   value={v.estado}
                   onChange={(e) => cambiarEstado(v.id, e.target.value)}
@@ -97,7 +161,7 @@ function PanelAdmin() {
                   <option value="pausado">Pausado</option>
                 </Form.Select>
 
-                {/* Activar/desactivar */}
+                {/* activar/desactivar */}
                 <Button
                   variant={v.activo ? "warning" : "success"}
                   className="me-2"
@@ -106,7 +170,7 @@ function PanelAdmin() {
                   {v.activo ? "Desactivar" : "Activar"}
                 </Button>
 
-                {/* Eliminar */}
+                {/* eliminar */}
                 <Button variant="danger" onClick={() => eliminarVehiculo(v.id)}>
                   Eliminar
                 </Button>

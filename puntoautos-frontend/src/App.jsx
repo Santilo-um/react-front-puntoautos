@@ -7,10 +7,12 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Logout from "./pages/Logout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import PanelAdmin from "./pages/PanelAdmin";
 import Publicar from "./pages/publicar";
 import Perfil from "./pages/perfil"
 import 'bootstrap/dist/css/bootstrap.min.css';
-  
+
 
 function App() {
   return (
@@ -64,6 +66,10 @@ function Navbar() {
 
               <li className="nav-item">
                 <Link className="nav-link" to="/perfil">Mi Perfil</Link>
+              </li>
+
+              <li className="nav-item">
+                <Link className="nav-link" to="/es_admin">Panel Admin</Link>
               </li>
 
               <li className="nav-item">
@@ -124,6 +130,15 @@ function Rutas() {
           <ProtectedRoute>
             <Perfil />
           </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/es_admin"
+        element={
+          <ProtectedAdminRoute>
+            <PanelAdmin />
+          </ProtectedAdminRoute>
         }
       />
 
