@@ -49,7 +49,7 @@ export default function Perfil() {
       );
 
       if (res.ok) {
-        cargarPerfil(); // recargar después de aceptar
+        cargarPerfil();
       }
     } catch (error) {
       console.error("Error al aceptar solicitud:", error);
@@ -72,10 +72,36 @@ export default function Perfil() {
       );
 
       if (res.ok) {
-        cargarPerfil(); // recargar después de rechazar
+        cargarPerfil();
       }
     } catch (error) {
       console.error("Error al rechazar solicitud:", error);
+    }
+  };
+
+  // -------------------------------
+  // ❌ ELIMINAR PUBLICACIÓN
+  // -------------------------------
+  const eliminarVehiculo = async (vehiculoId) => {
+    const confirmar = window.confirm("¿Seguro que querés eliminar esta publicación?");
+    if (!confirmar) return;
+
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/vehiculos/${vehiculoId}/`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 204) {
+        alert("Publicación eliminada");
+        cargarPerfil(); // refrescar publicaciones
+      } else {
+        alert("No se pudo eliminar la publicación");
+      }
+    } catch (error) {
+      console.error("Error al eliminar publicación:", error);
     }
   };
 
@@ -115,6 +141,14 @@ export default function Perfil() {
             <p>Precio: ${vehiculo.precio}</p>
             <p>Estado: {vehiculo.estado}</p>
 
+            {/* ❌ BOTÓN ELIMINAR PUBLICACIÓN */}
+            <button
+              onClick={() => eliminarVehiculo(vehiculo.vehiculo_id)}
+              className="btn btn-danger"
+            >
+              Eliminar publicación
+            </button>
+
             {/* Solicitudes recibidas */}
             <div className="mt-4">
               <p className="font-semibold mb-2">Solicitudes recibidas:</p>
@@ -135,6 +169,7 @@ export default function Perfil() {
                     <p>
                       <strong>Mensaje:</strong> {s.mensaje || "Sin mensaje"}
                     </p>
+
                     <p>
                       <strong>Estado:</strong>{" "}
                       <span
@@ -150,18 +185,15 @@ export default function Perfil() {
                       </span>
                     </p>
 
-                    {/* Botones */}
                     {s.estado === "pendiente" && (
                       <div className="flex gap-3 mt-3">
                         <button
-                          backgorundColor="green"
                           onClick={() => aceptar(s.id)}
                           className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
                         >
                           Aceptar
                         </button>
                         <button
-                          backgorundColor="red"
                           onClick={() => rechazar(s.id)}
                           className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                         >
@@ -188,8 +220,7 @@ export default function Perfil() {
         {perfil.solicitudes_enviadas.map((s) => (
           <div key={s.id} className="bg-white shadow rounded p-4">
             <p>
-              <strong>Vehículo:</strong> {s.vehiculo.marca}{" "}
-              {s.vehiculo.modelo}
+              <strong>Vehículo:</strong> {s.vehiculo.marca} {s.vehiculo.modelo}
             </p>
             <p>
               <strong>Mensaje:</strong> {s.mensaje}

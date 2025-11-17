@@ -10,7 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Publicar from "./pages/publicar";
 import Perfil from "./pages/perfil"
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+  
 
 function App() {
   return (
