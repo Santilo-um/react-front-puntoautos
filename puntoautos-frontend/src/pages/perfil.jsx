@@ -5,6 +5,9 @@ export default function Perfil() {
   const { token } = useContext(AuthContext);
   const [perfil, setPerfil] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [telefono, setTelefono] = useState("");
+  const [guardando, setGuardando] = useState(false);
+
 
   // -------------------------------
   // Cargar perfil autenticado
@@ -26,12 +29,41 @@ export default function Perfil() {
       }
 
       setPerfil(data);
+
+      setTelefono(data.usuario.telefono || "");
     } catch (error) {
       console.error("Error cargando perfil:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const guardarTelefono = async () => {
+    setGuardando(true);
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/auth/actualizar-telefono/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ telefono }),
+      });
+
+      if (res.ok) {
+        alert("Teléfono actualizado correctamente");
+        cargarPerfil(); // actualiza datos
+      } else {
+        alert("Error al guardar teléfono");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
+    setGuardando(false);
+  };
+
 
   // -------------------------------
   // ACEPTAR SOLICITUD
@@ -121,6 +153,28 @@ export default function Perfil() {
         <p className="text-lg font-semibold">Usuario:</p>
         <p>{perfil.usuario.email}</p>
       </div>
+      <div className="bg-white p-4 shadow rounded mb-6">
+        <h2 className="text-xl font-bold mb-2">Mi Información</h2>
+
+        <label className="block font-semibold mb-1">Correo:</label>
+        <p className="mb-4">{perfil.usuario.email}</p>
+
+        <label className="block font-semibold mb-1">Número de teléfono:</label>
+        <input
+          type="text"
+          value={telefono}
+          onChange={(e) => setTelefono(e.target.value)}
+          className="border rounded p-2 w-full mb-3"/>
+
+        <button
+          onClick={guardarTelefono}
+          disabled={guardando}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          {guardando ? "Guardando..." : "Guardar teléfono"}
+        </button>
+      </div>
+
 
       {/* Publicaciones */}
       <h2 className="text-2xl font-bold mb-3">Mis Publicaciones</h2>
@@ -166,6 +220,7 @@ export default function Perfil() {
                     <p>
                       <strong>Solicitante:</strong> {s.solicitante.email}
                     </p>
+                    <p><strong>Teléfono:</strong> {s.solicitante.telefono || "No proporcionado"}</p>
                     <p>
                       <strong>Mensaje:</strong> {s.mensaje || "Sin mensaje"}
                     </p>
