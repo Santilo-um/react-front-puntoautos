@@ -139,8 +139,12 @@ export default function Perfil() {
   };
 
   useEffect(() => {
+    const cargarPerfil = async () => {
+      // lógica de carga
+    };
     cargarPerfil();
-  }, [cargarPerfil]); // ✅ esto resuelve el error
+  }, []); // ✅ sin dependencias externas
+
 
   if (loading) return <p className="text-center mt-10">Cargando perfil...</p>;
   if (!perfil) return <p>No se pudo cargar el perfil.</p>;
