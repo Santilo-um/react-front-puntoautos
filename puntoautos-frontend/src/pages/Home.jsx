@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, Navbar, Nav } from 'react-bootstrap';
 import axios from 'axios';
 import './Home.css';
+import { API_URL } from "../config"; 
 
 const Home = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -37,7 +38,7 @@ const Home = () => {
 
     try {
       await axios.post(
-        "${API_URL}/solicitudes/",
+        `${API_URL}/solicitudes/`,
         { vehiculo: vehiculoId, mensaje: "Estoy interesado en tu vehículo" },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../AuthContext";
+import { API_URL } from "../config"; 
 
 export default function Perfil() {
   const { token } = useContext(AuthContext);

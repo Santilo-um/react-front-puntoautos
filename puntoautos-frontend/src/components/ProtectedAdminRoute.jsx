@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { API_URL } from "../config"; 
 
 function ProtectedAdminRoute({ children }) {
   const [isAdmin, setIsAdmin] = useState(null); // null = cargando

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, Card, Container, Row, Col, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config"; 
 
 function PanelAdmin() {
   const [vehiculos, setVehiculos] = useState([]);

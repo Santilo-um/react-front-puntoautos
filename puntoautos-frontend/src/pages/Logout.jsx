@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+
 function Logout() {
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
