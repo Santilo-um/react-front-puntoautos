@@ -16,7 +16,7 @@ function PanelAdmin() {
       if (!token) return navigate("/login");
 
       try {
-        const res = await fetch("http://127.0.0.1:8000/auth/es_admin/", {
+        const res = await fetch(`${API_URL}/auth/es_admin/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -44,7 +44,7 @@ function PanelAdmin() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/vehiculos/", {
+      const res = await fetch(`${API_URL}/vehiculos/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -63,7 +63,7 @@ function PanelAdmin() {
   const toggleActivo = async (id, nuevoEstado) => {
     const token = localStorage.getItem("token");
 
-    await fetch(`http://127.0.0.1:8000/vehiculos/${id}/`, {
+    await fetch(`${API_URL}/vehiculos/${id}/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -83,7 +83,7 @@ function PanelAdmin() {
   const cambiarEstado = async (id, nuevoEstado) => {
     const token = localStorage.getItem("token");
 
-    await fetch(`http://127.0.0.1:8000/vehiculos/${id}/`, {
+    await fetch(`${API_URL}/vehiculos/${id}/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -105,7 +105,7 @@ function PanelAdmin() {
 
     const token = localStorage.getItem("token");
 
-    await fetch(`http://127.0.0.1:8000/vehiculos/${id}/`, {
+    await fetch(`${API_URL}/vehiculos/${id}/`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });

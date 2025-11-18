@@ -13,7 +13,7 @@ function ProtectedAdminRoute({ children }) {
 
     const verificar = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/auth/es_admin/", {
+        const res = await fetch(`${API_URL}/auth/es_admin/`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();

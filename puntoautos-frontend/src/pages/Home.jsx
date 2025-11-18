@@ -12,7 +12,7 @@ const Home = () => {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/vehiculos/');
+        const response = await axios.get(`${API_URL}/vehiculos/`);
         setVehicles(response.data);
       } catch (error) {
         console.error('Error fetching vehicles:', error);
@@ -37,7 +37,7 @@ const Home = () => {
 
     try {
       await axios.post(
-        "http://127.0.0.1:8000/solicitudes/",
+        "${API_URL}/solicitudes/",
         { vehiculo: vehiculoId, mensaje: "Estoy interesado en tu vehículo" },
         { headers: { Authorization: `Bearer ${token}` } }
       );

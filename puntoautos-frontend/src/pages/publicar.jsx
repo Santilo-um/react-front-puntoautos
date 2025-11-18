@@ -39,7 +39,7 @@ function Publicar() {
   });
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/vehiculos/", {
+    const response = await fetch(`${API_URL}/vehiculos/`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`

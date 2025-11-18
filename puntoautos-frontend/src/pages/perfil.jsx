@@ -14,7 +14,7 @@ export default function Perfil() {
   // -------------------------------
   const cargarPerfil = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/auth/perfil/", {
+      const res = await fetch(`${API_URL}/auth/perfil/`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`, // ⬅️ TOKEN JWT
@@ -42,7 +42,7 @@ export default function Perfil() {
     setGuardando(true);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/auth/actualizar-telefono/", {
+      const res = await fetch(`${API_URL}/auth/actualizar-telefono/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +71,7 @@ export default function Perfil() {
   const aceptar = async (id) => {
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/solicitud/${id}/aceptar/`,
+        `${API_URL}/solicitud/${id}/aceptar/`,
         {
           method: "POST",
           headers: {
@@ -94,7 +94,7 @@ export default function Perfil() {
   const rechazar = async (id) => {
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/solicitud/${id}/rechazar/`,
+        `${API_URL}/solicitud/${id}/rechazar/`,
         {
           method: "POST",
           headers: {
@@ -119,7 +119,7 @@ export default function Perfil() {
     if (!confirmar) return;
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/vehiculos/${vehiculoId}/`, {
+      const res = await fetch(`${API_URL}/vehiculos/${vehiculoId}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
