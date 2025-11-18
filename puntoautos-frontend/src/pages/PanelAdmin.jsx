@@ -53,6 +53,10 @@ function PanelAdmin() {
   };
 
   useEffect(() => {
+    const verificarAdmin = () => {
+    // lógica
+    };
+
     verificarAdmin();
   }, []);
 

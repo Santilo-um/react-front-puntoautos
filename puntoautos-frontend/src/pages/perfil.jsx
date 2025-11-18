@@ -138,6 +138,9 @@ export default function Perfil() {
   };
 
   useEffect(() => {
+    const cargarPerfil = () => {
+      // lógica original
+    };
     if (token) cargarPerfil();
   }, [token]);
 

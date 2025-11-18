@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Form, Button, Navbar, Nav, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button, Navbar, Nav } from 'react-bootstrap';
 import axios from 'axios';
 import './Home.css';
 
 const Home = () => {
   const [vehicles, setVehicles] = useState([]);
-  const [searchQuery, setSearchQuery] = useState({ make: '', model: '', minPrice: '', maxPrice: '' });
+  const [searchQuery] = useState({ make: '', model: '', minPrice: '', maxPrice: '' });
   const [loading, setLoading] = useState(true);
   const [mensaje, setMensaje] = useState("");
 
