@@ -10,27 +10,32 @@ function PanelAdmin() {
   // -------------------------------
   // 1. Validar si el usuario es admin
   // -------------------------------
-  const verificarAdmin = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return navigate("/login");
+  useEffect(() => {
+    const verificarAdmin = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return navigate("/login");
 
-    try {
-      const res = await fetch("http://127.0.0.1:8000/auth/es_admin/", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      try {
+        const res = await fetch("http://127.0.0.1:8000/auth/es_admin/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (!res.ok || !data.admin) {
-        return navigate("/"); // No autorizado
+        if (!res.ok || !data.admin) {
+          return navigate("/");
+        }
+
+        cargarVehiculos();
+      } catch (error) {
+        console.error("Error verificando admin:", error);
+        navigate("/");
       }
+    };
 
-      cargarVehiculos(); // Si es admin, cargar publicaciones
-    } catch (error) {
-      console.error("Error verificando admin:", error);
-      navigate("/");
-    }
-  };
+    verificarAdmin();
+  }, [navigate]); // solo incluí dependencias reales
+
 
   // -------------------------------
   // 2. Cargar vehículos
@@ -51,10 +56,6 @@ function PanelAdmin() {
       setCargando(false);
     }
   };
-
-  useEffect(() => {
-    verificarAdmin();
-  }, [verificarAdmin]);
 
   // -------------------------------
   // Cambiar activo/desactivo
