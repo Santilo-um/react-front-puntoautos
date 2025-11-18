@@ -139,8 +139,8 @@ export default function Perfil() {
   };
 
   useEffect(() => {
-    if (token) cargarPerfil();
-  }, [token]);
+    cargarPerfil();
+  }, [cargarPerfil]); // ✅ esto resuelve el error
 
   if (loading) return <p className="text-center mt-10">Cargando perfil...</p>;
   if (!perfil) return <p>No se pudo cargar el perfil.</p>;
