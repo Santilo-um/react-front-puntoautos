@@ -53,12 +53,8 @@ function PanelAdmin() {
   };
 
   useEffect(() => {
-    const verificarAdmin = () => {
-    // lógica
-    };
-
     verificarAdmin();
-  }, []);
+  }, [verificarAdmin]);
 
   // -------------------------------
   // Cambiar activo/desactivo
