@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { AuthContext } from "../AuthContext";
 import { API_URL } from "../config"; 
 
@@ -13,7 +13,7 @@ export default function Perfil() {
   // -------------------------------
   // Cargar perfil autenticado
   // -------------------------------
-  const cargarPerfil = async () => {
+  const cargarPerfil = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/auth/perfil/`, {
         method: "GET",
@@ -37,7 +37,7 @@ export default function Perfil() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   const guardarTelefono = async () => {
     setGuardando(true);
@@ -139,11 +139,8 @@ export default function Perfil() {
   };
 
   useEffect(() => {
-    const cargarPerfil = async () => {
-      // lógica de carga
-    };
-    cargarPerfil();
-  }, []); // ✅ sin dependencias externas
+    cargarPerfil();   // ⬅️ llama a la función correcta
+  }, [cargarPerfil]);
 
 
   if (loading) return <p className="text-center mt-10">Cargando perfil...</p>;
